@@ -45,7 +45,7 @@ class Tistory {
             // sleep and do it over again.
             console.log(`Sleeping for 1 minutes`);
             sleep.sleep(60);
-            console.log(`Begins new loop`);
+            console.log(`Begins new loop at: ` + (new Date).toLocaleString() );
         }
     }
 
@@ -57,7 +57,7 @@ class Tistory {
         await this.page.click('.btn_public').catch( e => console.log('failed to click public button ') );
         await this.page.waitFor(500);
 
-        await this.page.select('select#category', this.category);
+        await this.page.select('select#category', this.category).catch( e => console.log('failed to select category ') );
         await this.page.waitFor(500);
 
     
