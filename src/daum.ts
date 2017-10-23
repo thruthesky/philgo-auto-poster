@@ -44,7 +44,7 @@ class Daum extends PuppeteerAutoPostExtension {
                 })
 
 
-            this.sleep(60);
+            await this.sleep(60);
             await this.page.goto( this.url ).catch( async e => this.error( 'failed_open_blog', "failed openning blog after sleep."));
         }
         

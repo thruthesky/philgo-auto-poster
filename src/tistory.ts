@@ -2,7 +2,6 @@
  * 
  */
 const pup2 = require('puppeteer');
-const sleep = require('sleep');
 const rpn = require('request-promise-native');
 
 class Tistory {
@@ -91,7 +90,7 @@ class Tistory {
 
             // sleep and do it over again.
             console.log(`OK: TiStory Sleeping for 2 minutes`);
-            sleep.sleep(this.timeoutSleep);
+            await this.page.waitFor(this.timeoutSleep);
             console.log(`===>>> TiStory: Begins new loop at: ` + (new Date).toLocaleString());
         }
     }

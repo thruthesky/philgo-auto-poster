@@ -1,5 +1,4 @@
 const pFacebook = require('puppeteer');
-const sleepFacebook = require('sleep');
 const rpnFacebook = require('request-promise-native');
 const cheerio = require('cheerio');
 
@@ -63,7 +62,7 @@ class Facebook {
 
             // sleep and do it over again.
             console.log(`facebook: sleeping for 2 minutes`);
-            sleepFacebook.sleep(120);
+            await this.page.waitFor(120);
             console.log(`facebook: begins new loop at: ` + (new Date).toLocaleString());
         }
     }

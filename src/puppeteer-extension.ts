@@ -1,6 +1,5 @@
 const puppeteer = require('puppeteer');
 const rpn = require('request-promise-native');
-const sleep = require('sleep');
 import { Page, Browser } from 'puppeteer';
 import * as cheerio from 'cheerio';
 
@@ -65,10 +64,10 @@ export class PuppeteerAutoPostExtension {
         process.exit(1);
     }
 
-    sleep( sec ) {
+    async sleep( sec ) {
         // sleep and do it over again.
         console.log(`OK: Sleeping for ${sec} seconds.`);
-        sleep.sleep( sec );
+        await this.page.waitFor( sec * 1000 );
         console.log(`===>>> Wake up on: ` + (new Date).toLocaleString());
     }
 

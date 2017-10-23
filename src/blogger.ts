@@ -58,7 +58,7 @@ class Blogger extends PuppeteerAutoPostExtension {
                     await this.philgo_auto_post_log(this.post, 'ERROR', this.name, this.url_blog_home);
                 })
 
-            this.sleep(60);
+            await this.sleep(60);
             await this.page.goto( this.url ).catch( async e => this.error( 'blog-failed-goto-home', "failed openning blog after sleep."));
         }
         
@@ -86,7 +86,6 @@ class Blogger extends PuppeteerAutoPostExtension {
         await this.page.waitFor('.titleField').then(a => console.log('OK: found title box'));
         await this.waitInCase(7);
         await this.page.type('.titleField', this.post['subject']).then(a => console.log('OK: title typed: ' + this.post['subject']));
-
 
         this.post['content'] += this.philgoLink();
         await this.page.type('#postingHtmlBox', this.post['content']).then(a => console.log('OK: content typed') );
