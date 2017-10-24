@@ -12,7 +12,7 @@ class Twitter extends PuppeteerAutoPostExtension {
     group = 'renz_anonuevo';
 
     async run() {
-        this.browser = await pTwitter.launch({ headless: false });
+        this.browser = pTwitter.launch({ headless: false });
         this.page = await this.browser.newPage();
         await this.firefox();
         await this.english();
@@ -44,10 +44,6 @@ class Twitter extends PuppeteerAutoPostExtension {
     }
 
     async publish() {
-
-    }
-
-    async screenshot() {
 
     }
 
