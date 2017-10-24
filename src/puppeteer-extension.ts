@@ -16,15 +16,15 @@ export class PuppeteerAutoPostExtension {
         safari: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Safari/604.1.38"
 
     };
-    
+
     constructor() {
 
     }
 
 
-    async init() {
-        this.browser = await puppeteer.launch({ headless: true });
-        this.page = await this.browser.newPage();
+    async init( headless = true ) {
+        this.browser = await puppeteer.launch({ headless: headless }).catch(e => console.log('ERROR: failed to launch chromium browser. ' + e.message) );
+        this.page = await this.browser.newPage().catch(e => console.log('ERROR: failed to create chromium browser. ' + e.message) );
     }
 
 
@@ -36,13 +36,13 @@ export class PuppeteerAutoPostExtension {
         await this.page.setUserAgent(this.ua.chrome);
     }
     async safari() {
-        await this.page.setUserAgent( this.ua.safari );
+        await this.page.setUserAgent(this.ua.safari);
     }
     async english() {
 
         await this.page.setExtraHTTPHeaders({
             'accept-language': 'en-US;q=0.6,en;q=0.4'
-          });
+        });
     }
     /**
      * 웹브라우저를 한글로 변경한다.
@@ -51,32 +51,40 @@ export class PuppeteerAutoPostExtension {
     async korean() {
         await this.page.setExtraHTTPHeaders({
             'accept-language': 'ko-KR,ko;q=0.8,en-US;q=0.6,en;q=0.4'
-          });
-    }
-    
-
-
-    async error( code, msg ) {
-        let dir = path.join(__dirname, 'screenshots');
-        let file = `daum-${code}.png`
-        let fullPath = path.join( dir, file );
-        
-        console.log(`ERROR: CODE: ${code} MESSAGE: ${msg}. See ${fullPath}`);
-        if( fs.existsSync(dir) ) fs.mkdirSync(dir);
-        await this.page.screenshot({ path: fullPath });
-    
+        });
     }
 
-    async fatal( code, msg ) {
-        await this.error( code, msg );
+
+
+    async error(code, msg) {
+
+        const dir = path.join(process.cwd(), 'screenshots');
+        const filename = `${code}.png`
+        const filepath = path.join(dir, filename);
+
+        console.log(`ERROR: CODE: ${code} MESSAGE: ${msg}. See ${filepath}`);
+
+
+        if ( ! this.page ) {
+            console.log("ERROR: page is falsy. You cannot leave a screenshot.");
+            return;
+        }
+
+        if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+        await this.page.screenshot({ path: filepath });
+
+    }
+
+    async fatal(code, msg) {
+        await this.error(code, msg);
         console.log("Going to exit since it is fatal error.");
         process.exit(1);
     }
 
-    async sleep( sec ) {
+    async sleep(sec) {
         // sleep and do it over again.
         console.log(`OK: Sleeping for ${sec} seconds.`);
-        await this.page.waitFor( sec * 1000 );
+        await this.page.waitFor(sec * 1000);
         console.log(`===>>> Wake up on: ` + (new Date).toLocaleString());
     }
 
@@ -99,13 +107,14 @@ export class PuppeteerAutoPostExtension {
     }
     /**
      * HTML 태그를 그대로 리턴한다.
+     * cheerio Object 를 받으려면 jQuery() 를 사용한다.
      */
     async html(): Promise<string> {
         const html: any = await this.page.$eval('html', (html: any) => html.outerHTML); // HTML 얻기
         return html;
     }
 
-    
+
     /**
      * Returns a promise of number indicating which selector has been appeared.
      * ( 여러 selector 들을 배열로 입력하고 그 중에 하나가 30 초 이내에 나타나면 0 부터 ... 배열.length 값 중 하나를 리턴한다. )
@@ -202,13 +211,13 @@ export class PuppeteerAutoPostExtension {
      *      Promise of null on error.
      * 
      */
-    async philgo_get_post( posting_id ) {
+    async philgo_get_post(posting_id) {
         console.log("OK: get_post_from_philgo() begins.");
         await this.waitInCase(1);
         this.post = null;
-        let html = await rpn('http://www.philgo.com/?module=post&action=get_auto_poster_idx_submit&post_id=auto_posting&posting_id=' + posting_id )
+        let html = await rpn('http://www.philgo.com/?module=post&action=get_auto_poster_idx_submit&post_id=auto_posting&posting_id=' + posting_id)
             .catch(e => console.log("failed to get post data from www.philgo.com: " + e.message));
-        if ( html ) html = (<string>html).trim();
+        if (html) html = (<string>html).trim();
         if (html) {
             try {
                 this.post = JSON.parse(html);
@@ -227,7 +236,7 @@ export class PuppeteerAutoPostExtension {
     }
 
 
-    
+
     /**
      * 
      * 필고 서버에 성공 실패 여부를 남긴다.
@@ -237,19 +246,20 @@ export class PuppeteerAutoPostExtension {
      * @param site 사이트 이름. 예) naverblog, daumblog, blogger, 네이버블로그, 네이버카페, 다음블로그,티스토리,구글블로그
      * @param site_url 홈페이지 주소. 블로그 주소. 또는 글이 등록된 URL 주소.
      */
-    async philgo_auto_post_log(post, re, site, site_url) {
-        console.log("OK: begin auto_post_log() with: " + re);
-        if ( !post || !post.idx ) {
-            console.log("ERROR: post has wrong value. return. ");
+    async philgo_auto_post_log(post, result, site, site_url) {
+        if (!post || !post.idx) {
+            console.log(`OK: ${site}: philgo_auto_post_log(). post is null. no more data?`);
             return;
         }
 
+        console.log(`OK: ${site}: philgo_auto_post_log() begin auto_post_log() with: ${result}`);
+
         site_url = encodeURIComponent(site_url);
         const time = (new Date).toLocaleString();
-        re = `${re}||${site_url}||${time}`;
+        const re = `${result}||${site_url}||${time}`;
 
         const url = `http://www.philgo.com/?module=post&action=auto_posting_log&submit=1&idx=${post['idx']}&site=${site}&re=${re}`;
-        let html = await rpn({url: url, timeout: 15000})
+        let html = await rpn({ url: url, timeout: 15000 })
             .catch(e => console.log("failed to get log data from www.philgo.com: " + e.message));
         if (html) {
             try {
@@ -267,7 +277,7 @@ export class PuppeteerAutoPostExtension {
             return false;
         }
     }
-    
+
 
 
 
@@ -275,10 +285,10 @@ export class PuppeteerAutoPostExtension {
      * 잠시 대기한다.
      * @param n 초 단위. 잠시 쉴 시간을 입력한다. 소수점으로 입력하여 0.5 초 와 같이 대기 할 수 있다.
      */
-    async waitInCase(n, msg='') {
+    async waitInCase(n: number, msg = '') {
         n = n * 1000;
         console.log(`OK: wait ${n} ms. ${msg}`);
-        await this.page.waitFor(n).then(a => {});
+        await this.page.waitFor(n).then(a => { });
     }
 
 
@@ -302,8 +312,6 @@ export class PuppeteerAutoPostExtension {
      * 
      */
     acceptLeaveAlert() {
-
-
         this.page.on('dialog', async dialog => {
             console.log("Dialog Type: " + dialog.type);
             console.log("Dialog Message:  " + dialog.message());
