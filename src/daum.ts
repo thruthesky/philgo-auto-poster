@@ -16,7 +16,7 @@ class Daum extends PuppeteerAutoPostExtension {
     }
 
     async main() {
-        await this.init( false );
+        await this.init( );
         await this.chrome();
 
         const login = await this.login().catch(e => this.fatal('login_failed', 'login failed: ' + e.message));
