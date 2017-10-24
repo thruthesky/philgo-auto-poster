@@ -2,6 +2,8 @@ const puppeteer = require('puppeteer');
 const rpn = require('request-promise-native');
 import { Page, Browser } from 'puppeteer';
 import * as cheerio from 'cheerio';
+import * as path from 'path';
+import * as fs from 'fs';
 
 export class PuppeteerAutoPostExtension {
     browser: Browser;
@@ -54,8 +56,14 @@ export class PuppeteerAutoPostExtension {
 
 
     async error( code, msg ) {
-        console.log(`ERROR: CODE: ${code} MESSAGE: ${msg}. See screenshots/daum-${code}.png`);
-        await this.page.screenshot({ path: `screenshots/daum-${code}.png` });
+        let dir = path.join(__dirname, 'screenshots');
+        let file = `daum-${code}.png`
+        let fullPath = path.join( dir, file );
+        
+        console.log(`ERROR: CODE: ${code} MESSAGE: ${msg}. See ${fullPath}`);
+        if( fs.existsSync(dir) ) fs.mkdirSync(dir);
+        await this.page.screenshot({ path: fullPath });
+    
     }
 
     async fatal( code, msg ) {
