@@ -90,7 +90,7 @@ class Tistory {
 
             // sleep and do it over again.
             console.log(`OK: TiStory Sleeping for 2 minutes`);
-            await this.page.waitFor(this.timeoutSleep);
+            await this.page.waitFor(this.timeoutSleep * 1000);
             console.log(`===>>> TiStory: Begins new loop at: ` + (new Date).toLocaleString());
         }
     }
@@ -183,7 +183,7 @@ class Tistory {
             });
         if (!re) return false;
 
-        return await this.page.waitFor('.btn_provisionally', { timeout: this.timeoutForSelector })
+        re = await this.page.waitFor('.btn_provisionally', { timeout: this.timeoutForSelector })
             .then(a => {
                 console.log('OK: Opening Write FORM Page.');
                 return true;
@@ -192,6 +192,22 @@ class Tistory {
                 console.log('failed to wait for .btn_provisionally');
                 return false;
             });
+
+        if ( re ) return re;
+
+        // 가끔씩 로그인이 풀림.
+        this.failed_to_open_tistory_form();
+
+    }
+
+    /**
+     * IP 가 변경되면, 로그인이 풀리는 것 같음.
+     */
+    async failed_to_open_tistory_form() {
+        console.log("ERROR: failed to open form. IP address of the computer has changed?");
+        await this.page.waitFor(60 * 1000);
+        await this.login();
+        await this.open_tistory_form();
     }
 
     /**

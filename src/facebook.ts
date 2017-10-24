@@ -23,6 +23,7 @@ class Facebook {
         // await this.page.setUserAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36");
 
         // 사파리
+
         // await this.page.setUserAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Safari/604.1.38");
 
         // 파이어폭스 모바일
@@ -62,7 +63,7 @@ class Facebook {
 
             // sleep and do it over again.
             console.log(`facebook: sleeping for 2 minutes`);
-            await this.page.waitFor(120);
+            await this.page.waitFor(120 * 1000);
             console.log(`facebook: begins new loop at: ` + (new Date).toLocaleString());
         }
     }
@@ -125,8 +126,8 @@ class Facebook {
         let html = await rpnFacebook('http://www.philgo.com/?module=post&action=get_auto_poster_idx_submit&post_id=auto_posting&posting_id=facebook3')
             .catch(e => console.log("failed to get post data from www.philgo.com: " + e.message));
         let re = null;
+        if ( html ) html = (<string>html).trim();
         if (html) {
-            html = (<string>html).trim();
             try {
                 re = JSON.parse(html);
             }
