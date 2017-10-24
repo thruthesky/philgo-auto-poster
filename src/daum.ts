@@ -19,7 +19,7 @@ class Daum extends PuppeteerAutoPostExtension {
     }
 
     async main() {
-        await this.setPuppeteer();
+        await this.init();
         await this.chrome();
 
 
@@ -50,13 +50,7 @@ class Daum extends PuppeteerAutoPostExtension {
         
 
     }
-    async setPuppeteer() {
-        const browser = await puppeteer.launch({ headless: true });
-        const page = await browser.newPage();
-        this.set(browser, page);
-    }
-
-
+    
     async submit_form() {
         console.log("OK: daum: submit_form() begins.");
         const frames = await this.page.frames();

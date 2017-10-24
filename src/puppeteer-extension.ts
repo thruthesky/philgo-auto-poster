@@ -8,6 +8,7 @@ import * as fs from 'fs';
 export class PuppeteerAutoPostExtension {
     browser: Browser;
     page: Page;
+    post = null;
 
     ua = {
         firefox: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:54.0) Gecko/20100101 Firefox/54.0",
@@ -19,6 +20,14 @@ export class PuppeteerAutoPostExtension {
     constructor() {
 
     }
+
+
+    async init() {
+        this.browser = await puppeteer.launch({ headless: true });
+        this.page = await this.browser.newPage();
+    }
+
+
 
     async firefox() {
         await this.page.setUserAgent(this.ua.firefox);
@@ -45,14 +54,6 @@ export class PuppeteerAutoPostExtension {
           });
     }
     
-
-    /**
-     * puppeteer 의 browser 와 page 객체를 저장한다.
-     */
-    set(browser, page) {
-        this.browser = browser;
-        this.page = page;
-    }
 
 
     async error( code, msg ) {
@@ -204,14 +205,14 @@ export class PuppeteerAutoPostExtension {
     async philgo_get_post( posting_id ) {
         console.log("OK: get_post_from_philgo() begins.");
         await this.waitInCase(1);
+        this.post = null;
         let html = await rpn('http://www.philgo.com/?module=post&action=get_auto_poster_idx_submit&post_id=auto_posting&posting_id=' + posting_id )
             .catch(e => console.log("failed to get post data from www.philgo.com: " + e.message));
-        let re = null;
         if ( html ) html = (<string>html).trim();
         if (html) {
             try {
-                re = JSON.parse(html);
-                console.log("OK: got post from philgo.com: subject: " + re['subject']);
+                this.post = JSON.parse(html);
+                console.log("OK: got post from philgo.com: subject: " + this.post['subject']);
             }
             catch (e) {
                 console.log("ERROR: JSON parsing error. Failed to get post from philgo server..");
@@ -222,7 +223,7 @@ export class PuppeteerAutoPostExtension {
             console.log("OK: No more data.");
         }
 
-        return re;
+        return this.post;
     }
 
 
@@ -294,4 +295,25 @@ export class PuppeteerAutoPostExtension {
         `;
     }
 
+
+    /**
+     * Some cases the brwoser shows 'Stay? or Leave' when there is un-published post.
+     * This method sets a handler to accept 'Leave' always.
+     * 
+     */
+    acceptLeaveAlert() {
+
+
+        this.page.on('dialog', async dialog => {
+            console.log("Dialog Type: " + dialog.type);
+            console.log("Dialog Message:  " + dialog.message());
+            if (dialog.type === 'beforeunload') {
+                console.log("OK: ======> Stay | Leave box appers. Going to accept Leave.");
+                await dialog.accept();
+            }
+            else await dialog.dismiss();
+        });
+
+
+    }
 }

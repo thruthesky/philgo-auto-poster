@@ -12,65 +12,39 @@ class Blogger extends PuppeteerAutoPostExtension {
     url_blog_home = 'http://aboutphil28.blogspot.com';                             // 블로그 홈 주소
     category = '3804997078465626362';                            // 각 블로그 별 글 카테고리.
 
-    browser;
-    page;
-    post = null;
+    
     constructor() {
         super();
     }
 
     async main() {
-        await this.setPuppeteer();
+        await this.init();
         await this.chrome();
         await this.korean();
 
-
-
         const login = await this.login().catch(e => this.fatal('login_failed', 'login failed: ' + e.message));
 
-
-        this.page.on('dialog', async dialog => {
-            console.log("Dialog Type: " + dialog.type);
-            console.log("Dialog Message:  " + dialog.message());
-            if (dialog.type === 'beforeunload') {
-                console.log("OK: ======> Stay | Leave box appers. Going to accept Leave.");
-                await dialog.accept();
-            }
-            else await dialog.dismiss();
-        });
-
-
+        this.acceptLeaveAlert();
+        
         while (login) {
 
             await this.philgo_get_post( this.name )
                 .then(async post => {
-                    this.post = post;
-                    if (!this.post || !this.post['subject']) return null;
-                    else return await this.submit_form();
+                    if ( post ) return await this.submit_form();
                 })
                 .then(async url => {
-                    if ( url ) {
-                        await this.philgo_auto_post_log(this.post, 'SUCCESS', this.name, url);
-                    }
+                    if ( url ) await this.philgo_auto_post_log(this.post, 'SUCCESS', this.name, url);
                 })
                 .catch(async e => {
                     await this.error('blogger-fail', 'failed: ' + e.message);
                     await this.philgo_auto_post_log(this.post, 'ERROR', this.name, this.url_blog_home);
-                })
+                });
 
             await this.sleep(60);
             await this.page.goto( this.url ).catch( async e => this.error( 'blog-failed-goto-home', "failed openning blog after sleep."));
         }
         
-
     }
-    async setPuppeteer() {
-        const browser = await puppeteer.launch({ headless: true });
-        const page = await browser.newPage();
-        this.set(browser, page);
-    }
-
-
     
 
 
@@ -97,8 +71,7 @@ class Blogger extends PuppeteerAutoPostExtension {
         // wait for submit. blogger is SPA.
         await this.waitInCase(12, 'wait after form submitting. it is SPA. so, it is not easy that page has changed.');
 
-        
-
+    
         let $newHtml = await this.jQuery();
         let afterTitle = $newHtml.find('a[href*="#editor/target=post"]').first().text();
         console.log('OK: new first title after posting: ' + afterTitle);
