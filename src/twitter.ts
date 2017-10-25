@@ -29,7 +29,7 @@ class Twitter extends PuppeteerAutoPostExtension {
                     await this.philgo_auto_post_log(this.post, 'ERROR', this.siteName, this.url + '/' + this.id);
                 });
 
-            await this.sleep(5);
+            await this.sleep(10);
         }
 
     }
@@ -48,22 +48,21 @@ class Twitter extends PuppeteerAutoPostExtension {
     }
 
     private async openComposeTweet() {
-        if (!this.post) {
-            console.log("OK: Tweeter: submitTweet(). this.post is null. no more post? just return");
-            return;
-        }
-
         if (!this.page) {
             this.error('page_is_falsy', 'ERROR: this.page has become falsy! Had the browser started with headless: false and the browser closed?');
             return;
         }
 
-        await this.page.tap(this.composeTweet).then(a => console.log("OK: Tap to compose tweet."));
+        await this.page.goto(this.url + '/compose/tweet').then(a => console.log("OK: Tap to compose tweet."));
         await this.page.waitForSelector('textarea', this.waitForSelectorOptions).then(a => console.log("OK: waiting for compose tweet page navigation."));
 
     }
 
     private async submitTweet() {
+        if (!this.post) {
+            console.log("OK: Tweeter: submitTweet(). this.post is null. no more post? just return");
+            return;
+        }
         let content = this.post['subject'] + ' ' + 'https://www.philgo.com/?' + this.post['idx'];
         await this.page.type('textArea', content).then(a => console.log("OK: typing contents"));
         await this.page.tap('div[data-testid="tweet-button"]').then(a => console.log("OK: Tap tweet button"));
