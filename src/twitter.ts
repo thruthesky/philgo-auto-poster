@@ -2,11 +2,11 @@ import { PuppeteerAutoPostExtension } from "./puppeteer-extension";
 
 class Twitter extends PuppeteerAutoPostExtension {
     
-    id = 'renz_anonuevo';                    // 블로그 글 쓰기 아이디.
-    password = "Wc~6924432,'";              // 블로그 글 쓰기 비밀번호.
-    url = 'https://mobile.twitter.com';        // 블로그 주소.
-    group = 'renz_anonuevo';
-    siteName = 'twitter';
+    private id = 'renz_anonuevo';
+    private password = "Wc~6924432,'";
+    private url = 'https://mobile.twitter.com';
+    private group = 'renz_anonuevo';
+    private siteName = 'twitter';
     private composeTweet = "a[href='/compose/tweet']";
     private waitForSelectorOptions = {
         timeout : 5000,
@@ -26,7 +26,7 @@ class Twitter extends PuppeteerAutoPostExtension {
                 .then( async () => await this.philgo_auto_post_log(this.post, 'SUCCESS', this.siteName, this.url + '/' + this.id))
                 .catch(async e => {
                     await this.error('fail', 'failed: ' + e.message);
-                    await this.philgo_auto_post_log(this.post, 'ERROR', this.siteName, this.url);
+                    await this.philgo_auto_post_log(this.post, 'ERROR', this.siteName, this.url + '/' + this.id);
                 });
 
             await this.sleep(5);
@@ -34,7 +34,7 @@ class Twitter extends PuppeteerAutoPostExtension {
 
     }
 
-    async login() {
+    private async login() {
         await this.page.goto(this.url + '/login')
             .then(a => console.log(`OK: Twitter open: ${this.url}/login`));
         await this.page.waitForSelector( 'input[name="session[username_or_email]"', this.waitForSelectorOptions ).then( a => console.log("OK: Login page navigation") );
@@ -45,11 +45,11 @@ class Twitter extends PuppeteerAutoPostExtension {
         await this.page.waitForSelector( this.composeTweet,  this.waitForSelectorOptions ).then(a => console.log("OK: Page navigation finished after login."));
 
         return true;
-        }
+    }
 
-    async openComposeTweet() {
+    private async openComposeTweet() {
         if (!this.post) {
-            console.log("OK: facebook: submit_form(). this.post is null. no more post? just return");
+            console.log("OK: Tweeter: submitTweet(). this.post is null. no more post? just return");
             return;
         }
 
@@ -63,11 +63,7 @@ class Twitter extends PuppeteerAutoPostExtension {
 
     }
 
-    async submitTweet() {
-        if (!this.post) {
-            console.log("OK: Twitter: submit_form(). this.post is null. no more post? just return");
-            return;
-        }
+    private async submitTweet() {
         let content = this.post['subject'] + ' ' + 'https://www.philgo.com/?' + this.post['idx'];
         await this.page.type('textArea', content).then(a => console.log("OK: typing contents"));
         await this.page.tap('div[data-testid="tweet-button"]').then(a => console.log("OK: Tap tweet button"));
