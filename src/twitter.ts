@@ -2,10 +2,9 @@ import { PuppeteerAutoPostExtension } from "./puppeteer-extension";
 
 class Twitter extends PuppeteerAutoPostExtension {
     
-    private id = 'renz_anonuevo';
-    private password = "Wc~6924432,'";
+    private id = 'user';
+    private password = "password";
     private url = 'https://mobile.twitter.com';
-    private group = 'renz_anonuevo';
     private siteName = 'twitter1';
     private composeTweet = "a[href='/compose/tweet']";
     private waitForSelectorOptions = {
