@@ -21,8 +21,8 @@ class Twitter extends PuppeteerAutoPostExtension {
 
         while (login) {
             await this.philgo_get_post(this.siteName)
-                .then( async post => await this.openComposeTweet() )
-                .then( async () => await this.submitTweet() )
+                .then( async post => await this.open_compose_tweet() )
+                .then( async () => await this.submit_tweet() )
                 .then( async () => await this.philgo_auto_post_log(this.post, 'SUCCESS', this.siteName, this.url + '/' + this.id))
                 .catch(async e => {
                     await this.error('fail', 'failed: ' + e.message);
@@ -47,7 +47,7 @@ class Twitter extends PuppeteerAutoPostExtension {
         return true;
     }
 
-    private async openComposeTweet() {
+    private async open_compose_tweet() {
         if (!this.page) {
             this.error('page_is_falsy', 'ERROR: this.page has become falsy! Had the browser started with headless: false and the browser closed?');
             return;
@@ -58,7 +58,7 @@ class Twitter extends PuppeteerAutoPostExtension {
 
     }
 
-    private async submitTweet() {
+    private async submit_tweet() {
         if (!this.post) {
             console.log("OK: Tweeter: submitTweet(). this.post is null. no more post? just return");
             return;
