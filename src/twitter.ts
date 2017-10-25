@@ -6,7 +6,7 @@ class Twitter extends PuppeteerAutoPostExtension {
     private password = "Wc~6924432,'";
     private url = 'https://mobile.twitter.com';
     private group = 'renz_anonuevo';
-    private siteName = 'twitter';
+    private siteName = 'twitter1';
     private composeTweet = "a[href='/compose/tweet']";
     private waitForSelectorOptions = {
         timeout : 5000,
@@ -29,7 +29,7 @@ class Twitter extends PuppeteerAutoPostExtension {
                     await this.philgo_auto_post_log(this.post, 'ERROR', this.siteName, this.url + '/' + this.id);
                 });
 
-            await this.sleep(10);
+            await this.sleep(60);
         }
 
     }
