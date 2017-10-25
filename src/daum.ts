@@ -27,7 +27,9 @@ class Daum extends PuppeteerAutoPostExtension {
             await this.philgo_get_post(this.name)
                 .then(async post => await this.open_posting_form())
                 .then(async () => await this.submit_form())
-                .then(async () => await this.philgo_auto_post_log(this.post, 'SUCCESS', 'daumblog', ''))
+                .then(async re => {
+                    if ( re ) await this.philgo_auto_post_log(this.post, 'SUCCESS', 'daumblog', '');
+                })
                 .catch(async e => {
                     await this.error('fail', 'failed: ' + e.message);
                     await this.philgo_auto_post_log(this.post, 'ERROR', 'daumblog', '');
@@ -40,7 +42,12 @@ class Daum extends PuppeteerAutoPostExtension {
     }
     
     async submit_form() {
+        if ( ! this.post ) {
+            console.log("OK: daum: submit_form(). this.post is null. no more post? just return");
+            return false;
+        }
         console.log("OK: daum: submit_form() begins.");
+
         const frames = await this.page.frames();
         const frame = frames.find(f => f.name() === 'BlogMain');
 
@@ -61,6 +68,7 @@ class Daum extends PuppeteerAutoPostExtension {
 
         await frame.waitFor('#ProfileMenuMain').then( a => console.log("OK: posting on daum blog success") );
 
+        return true;
     }
 
     async open_posting_form() {
