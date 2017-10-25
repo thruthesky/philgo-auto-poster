@@ -7,7 +7,7 @@ import * as fs from 'fs';
 
 export class PuppeteerAutoPostExtension {
     browser: Browser;
-    page: Page;
+    page;
     post = null;
 
     ua = {
