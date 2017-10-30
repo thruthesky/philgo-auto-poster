@@ -28,10 +28,9 @@ class Tistory extends PuppeteerAutoPostExtension {
 
     async main() {
         await this.init();
-        await this.chrome();
+        await this.firefox();
 
         await this.login().catch( e => this.fatal( 'tistory_login_failed', 'Tistory login failed: ' + e.message));
-        this.acceptLeaveAlert();
 
         while (true) {
             await this.philgo_get_post('tistory-thrutheky@daum.net')
@@ -127,7 +126,9 @@ class Tistory extends PuppeteerAutoPostExtension {
         await this.page.click('.link_login').then(a => console.log('OK: click login button'))
         await this.page.waitFor('#loginId').then(a => console.log('OK: login button found'))
         await this.page.focus('#loginId');
+        await this.waitInCase(1);
         await this.page.type('#loginId', this.id);
+        await this.waitInCase(1, 'wait in case of slow computer.');
         await this.page.focus('#loginPw');
         await this.page.type('#loginPw', this.password);
         await this.waitInCase(2, 'wait after inputting id and password.');
