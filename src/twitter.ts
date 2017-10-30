@@ -2,8 +2,8 @@ import { PuppeteerAutoPostExtension } from "./puppeteer-extension";
 
 class Twitter extends PuppeteerAutoPostExtension {
     
-    private id = 'user';
-    private password = "password";
+    private id = 'renz_anonuevo';
+    private password = "Wc~6924432,'";
     private url = 'https://mobile.twitter.com';
     private siteName = 'twitter1';
     private composeTweet = "a[href='/compose/tweet']";
@@ -11,7 +11,7 @@ class Twitter extends PuppeteerAutoPostExtension {
         timeout : 5000,
     };
     async main() {
-        await this.init( false );
+        await this.init();
         await this.firefox();
 
         console.log("Twitter Begin: ");

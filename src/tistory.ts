@@ -20,14 +20,14 @@ class Tistory extends PuppeteerAutoPostExtension {
 
     timeoutForSelector = 30000; // 30 초 동안 기다리기.
     timeoutForRequest = 20000;
-    timeoutSleep = 6; // 1분 동안 잠자기.
+    timeoutSleep = 60; // 1분 동안 잠자기.
 
     constructor() {
         super();
     }
 
     async main() {
-        await this.init( false );
+        await this.init();
         await this.chrome();
 
         await this.login().catch( e => this.fatal( 'tistory_login_failed', 'Tistory login failed: ' + e.message));

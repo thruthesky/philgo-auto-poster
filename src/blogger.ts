@@ -40,7 +40,7 @@ class Blogger extends PuppeteerAutoPostExtension {
                     await this.philgo_auto_post_log(this.post, 'ERROR', this.name, this.url_blog_home);
                 });
 
-            await this.sleep(6);
+            await this.sleep(60);
             await this.page.goto( this.url ).catch( async e => this.error( 'blog-failed-goto-home', "failed openning blog after sleep."));
         }
         
