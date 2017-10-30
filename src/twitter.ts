@@ -11,7 +11,7 @@ class Twitter extends PuppeteerAutoPostExtension {
         timeout : 5000,
     };
     async main() {
-        await this.init( false );
+        await this.init();
         await this.firefox();
 
         console.log("Twitter Begin: ");
