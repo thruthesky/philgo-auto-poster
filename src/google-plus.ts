@@ -35,18 +35,13 @@ class GooglePlus extends PuppeteerAutoPostExtension {
     async login() {
         this.page.goto('https://accounts.google.com/ServiceLogin?continue=' + this.url).then( a => console.log('Open', this.url) );
 
-                
         await this.page.waitFor('#identifierId').then(a => console.log("OK: blogger: found login form box"));
         await this.waitInCase(3);
 
         await this.page.type('#identifierId', this.id).then(a => console.log("OK: type id"));
         await this.waitInCase(1);
 
-
         await this.page.click('#identifierNext').then(a => console.log("OK: blogger: click id submit button"));
-        
-
-
         // password
         await this.page.waitFor('input[name="password"]').then(a => console.log("OK: blogger: found password input box"));
         await this.waitInCase(3);
