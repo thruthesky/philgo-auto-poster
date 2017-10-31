@@ -13,6 +13,7 @@ export class PuppeteerAutoPostExtension {
     ua = {
         firefox: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:54.0) Gecko/20100101 Firefox/54.0",
         chrome: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36",
+        cromeMobile: "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Mobile Safari/537.36",
         safari: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Safari/604.1.38"
 
     };
@@ -34,6 +35,9 @@ export class PuppeteerAutoPostExtension {
     }
     async chrome() {
         await this.page.setUserAgent(this.ua.chrome);
+    }
+    async chromeMobile() {
+        await this.page.setUserAgent( this.ua.cromeMobile );
     }
     async safari() {
         await this.page.setUserAgent(this.ua.safari);
@@ -319,7 +323,7 @@ export class PuppeteerAutoPostExtension {
                 console.log("OK: ======> Stay | Leave box appers. Going to accept Leave.");
                 await dialog.accept();
             }
-            else await dialog.dismiss();
+            else await dialog.accept();
         });
 
 
