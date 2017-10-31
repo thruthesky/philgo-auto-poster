@@ -66,7 +66,7 @@ export class PuppeteerAutoPostExtension {
         const filename = `${code}.png`
         const filepath = path.join(dir, filename);
 
-        console.log(`ERROR: CODE: ${code} MESSAGE: ${msg}. See ${filepath}`);
+        if ( code != 'no-data' ) console.log(`ERROR: CODE: ${code} MESSAGE: ${msg}. See ${filepath}`);
 
 
         if ( ! this.page ) {
@@ -75,8 +75,8 @@ export class PuppeteerAutoPostExtension {
         }
 
         if (!fs.existsSync(dir)) fs.mkdirSync(dir);
-        await this.page.screenshot({ path: filepath });
-
+        if (code != 'no-data') await this.page.screenshot({ path: filepath });
+        if (code == 'no-data') console.log(msg);
     }
 
     async fatal(code, msg) {
@@ -189,7 +189,7 @@ export class PuppeteerAutoPostExtension {
         let maxWaitCount = timeout * 1000 / 100;
         for (let i = 0; i < maxWaitCount; i++) {
             await this.page.waitFor(100);
-            $html = await this.html();
+            $html = await this.jQuery();
             if ($html.find(selector).length === 0) return true;
         }
         return false;
@@ -325,7 +325,5 @@ export class PuppeteerAutoPostExtension {
             }
             else await dialog.accept();
         });
-
-
     }
 }

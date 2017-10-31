@@ -2,14 +2,16 @@ import { PuppeteerAutoPostExtension } from "./puppeteer-extension";
 
 class GooglePlus extends PuppeteerAutoPostExtension {
 
-    siteName;
+    siteName = 'testgoogleplus';
     url = 'https://plus.google.com';
     id = 'renzmallari401';
     password = "Wc~6924432,'";
+
     
-    constructor() {
-        super()
-    }
+        constructor() {
+            super()
+        }
+
     async main() {
         await this.init();
         await this.firefox();
@@ -22,9 +24,10 @@ class GooglePlus extends PuppeteerAutoPostExtension {
             await this.philgo_get_post(this.siteName)
                 .then( async post => await this.goto_community() )
                 .then( async () => await this.submit_post() )
-                .then( async () => await this.philgo_auto_post_log(this.post, 'SUCCESS', this.siteName, this.url + '/' + this.id))
+                .then( async () => await this.philgo_auto_post_log(this.post['subject'], 'SUCCESS', this.siteName, this.url + '/' + this.id))
                 .catch(async e => {
-                    await this.error('fail', 'failed: ' + e.message);
+                    if ( !e.code ) await this.error('fail', 'failed: ' + e.message);
+                    if ( e.code = 'no-data' ) await this.error(e.code, 'OK: ' + e.message);
                     await this.philgo_auto_post_log(this.post, 'ERROR', this.siteName, this.url + '/' + this.id);
                 });
 
@@ -54,14 +57,28 @@ class GooglePlus extends PuppeteerAutoPostExtension {
 
     async goto_community( communityId? ) {
         if( communityId )await this.page.goto(this.url + '/' + communityId).then( a => console.log('Go to community', communityId) );
-        await this.page.waitForSelector('div[aria-label="Create a new post"]').then( a => console.log('Text area found..') );
     }
 
     async submit_post() {
-        let content = this.post['subject'] + ' ' + 'https://www.philgo.com/?' + this.post['idx'];
+        if ( !this.post ) throw { message: 'No data to post!', code: 'no-data' };
+        let link = 'https://www.philgo.com/?' + this.post['idx'];
+        await this.page.waitForSelector('div[aria-label="Create a new post"]').then( a => console.log('Create post button found..') );
+        await this.waitInCase(1);
         await this.page.click('div[aria-label="Create a new post"]').then( a => console.log('Tap to write post...'));
+        
+        await this.waitInCase(5);
+        await this.page.waitForSelector('#XPxXbf').then( a => console.log('waiting for text area.'));
+        await this.waitInCase(1);
+        await this.page.type('#XPxXbf', this.post['subject']).then( a => console.log('Writing post..'));
+        
+        await this.page.click('div[aria-label="Add link"]').then( a => console.log('Input link...'));
         await this.waitInCase(2);
-        await this.page.type('#XPxXbf', content).then( a => console.log('Writing post..'));
+        // await this.page.waitForSelector('.whsOnd.zHQkBf').then( a => console.log('waiting for text area.'));;
+        await this.page.type('.whsOnd.zHQkBf', link).then( a => console.log('typing link...'));
+        await this.page.keyboard.press('Enter').then( a => console.log('submit link...'));
+
+        // await this.page.waitForNavigation('.mx8eub', {timeout: 30000}).then( a => console.log('wait for preview to load..'));
+        await this.waitInCase(8);
         await this.page.tap('.O0WRkf.zZhnYe.e3Duub.C0oVfc').then( a => console.log('submit post..'));
     }
 }
