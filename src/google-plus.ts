@@ -7,7 +7,7 @@ class GooglePlus extends PuppeteerAutoPostExtension {
     id = 'renzmallari401';
     password = "Wc~6924432,'";
     communityId = '110408989422420420231';
-    category = 'Tablet';   // should be exact.
+    category = 'Tablet';   // should be exact and case sensitive.
     
         constructor() {
             super()
@@ -19,7 +19,7 @@ class GooglePlus extends PuppeteerAutoPostExtension {
         }
 
 
-        await this.init( false );
+        await this.init();
         await this.firefox();
 
         console.log("Google Plus Begin: ");
@@ -71,13 +71,13 @@ class GooglePlus extends PuppeteerAutoPostExtension {
         await this.page.type('#XPxXbf', this.post['subject']).then( a => console.log('Writing post..'));
 
         // Tap post button when available
-        let re = await this.waitDisappear('div[aria-disabled="true"]').then( a => console.log('Is post button enabled? ', a) );
+        let re = await this.waitDisappear('div[aria-disabled="true"]')   //.then( a => console.log('Is post button enabled? ', a) );
         if ( re === false ) throw { message: 'Timeout for data to load for before posting exceeds!' }; // if ( !re ) -> not working as expected.
         await this.page.tap('.O0WRkf.zZhnYe.e3Duub.C0oVfc').then( a => console.log('submit post..'));
         await this.waitInCase(1);
 
-        re = await this.waitAppear( ['div:contains("Choose a category")', `div[data-name="${ this.category }"]`] );
-        if ( re === -1 ) return null;
+        let count = await this.waitAppear( ['div:contains("Choose a category")', `div[data-name="${ this.category }"]`] );
+        if ( count === -1 ) return null;
         await this.page.tap(`div[data-name="${ this.category }"]`);
     }
 
