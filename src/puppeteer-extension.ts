@@ -76,7 +76,7 @@ export class PuppeteerAutoPostExtension {
 
         if (!fs.existsSync(dir)) fs.mkdirSync(dir);
         if (code != 'no-data') await this.page.screenshot({ path: filepath });
-        if (code == 'no-data') console.log(msg);
+        if (code == 'no-data') console.log(msg); // no need to screenshot if no data.
     }
 
     async fatal(code, msg) {
@@ -152,7 +152,7 @@ export class PuppeteerAutoPostExtension {
         const maxWaitCount = timeout * 1000 / 100;
         for (let i = 0; i < maxWaitCount; i++) {
             await this.page.waitFor(100);
-            $html = await this.html();
+            $html = await this.jQuery();
             for (let i = 0; i < selectors.length; i++) {
                 if ($html.find(selectors[i]).length > 0) return i;
             }
