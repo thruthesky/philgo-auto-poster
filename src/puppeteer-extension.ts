@@ -66,7 +66,7 @@ export class PuppeteerAutoPostExtension {
         const filename = `${code}.png`
         const filepath = path.join(dir, filename);
 
-        if ( code != 'no-data' ) console.log(`ERROR: CODE: ${code} MESSAGE: ${msg}. See ${filepath}`);
+        console.log(`ERROR: CODE: ${code} MESSAGE: ${msg}. See ${filepath}`);
 
 
         if ( ! this.page ) {
@@ -75,8 +75,8 @@ export class PuppeteerAutoPostExtension {
         }
 
         if (!fs.existsSync(dir)) fs.mkdirSync(dir);
-        if (code != 'no-data') await this.page.screenshot({ path: filepath });
-        if (code == 'no-data') console.log(msg); // no need to screenshot if no data.
+        await this.page.screenshot({ path: filepath });
+        
     }
 
     async fatal(code, msg) {

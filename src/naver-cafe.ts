@@ -21,7 +21,7 @@ class NaverCafe extends PuppeteerAutoPostExtension {
     }
 
     async main() {
-        await this.init(false);
+        await this.init();
         await this.chromeMobile();
 
         await this.login().catch(e => this.fatal('naver_cafe_login_failed', 'naver cafe login failed: ' + e.message));
