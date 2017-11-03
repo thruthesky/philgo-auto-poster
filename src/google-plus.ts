@@ -18,7 +18,6 @@ class GooglePlus extends PuppeteerAutoPostExtension {
             if ( !this.category ) throw { message: 'Requires category!' }
         }
 
-
         await this.init();
         await this.firefox();
 
@@ -33,7 +32,7 @@ class GooglePlus extends PuppeteerAutoPostExtension {
                 .then( async () => await this.philgo_auto_post_log(this.post['subject'], 'SUCCESS', this.siteName, this.url + '/' + this.id))
                 .catch(async e => {
                     if ( !e.code ) await this.error('fail', 'failed: ' + e.message);
-                    if ( e.code = 'no-data' ) await this.error(e.code, 'OK: ' + e.message);
+                    if ( e.code == 'no-data' ) await this.error(e.code, 'OK: ' + e.message);
                     await this.philgo_auto_post_log(this.post, 'ERROR', this.siteName, this.url + '/' + this.id);
                 });
 
@@ -45,38 +44,40 @@ class GooglePlus extends PuppeteerAutoPostExtension {
         // Need to handle buy and sell
         if ( this.communityId ) {
             await this.page.waitForSelector('div[aria-label="Create a new post"]').then( a => console.log('Create post button found..') );
-            await this.page.goto(this.url + '/communities/' + this.communityId, { timeout: 50000 }).then( a => console.log('Go to community', this.communityId) );
+            await this.page.goto(this.url + '/communities/' + this.communityId, { timeout: 50000 }).then( a => console.log('OK: Go to community', this.communityId) );
         }
+        if ( !this.communityId ) await this.page.goto(this.url, { timeout: 50000 }).then( a => console.log('OK: Public community') );
+
     }
 
     async submit_post( ) {
         if ( !this.post ) throw { message: 'No data to post!', code: 'no-data' };
         let link = 'https://www.philgo.com/?' + this.post['idx'];
         // open post editor
-        await this.page.waitForSelector('div[aria-label="Create a new post"]').then( a => console.log('Create post button found..') );
+        await this.page.waitForSelector('div[aria-label="Create a new post"]').then( a => console.log('OK: Create post button found..') );
         await this.waitInCase(1);
-        await this.page.click('div[aria-label="Create a new post"]').then( a => console.log('Tap to write post...'));
+        await this.page.click('div[aria-label="Create a new post"]').then( a => console.log('OK: Tap to write post...'));
         // wait for elements
         await this.waitInCase(15);
-        await this.page.waitForSelector('#XPxXbf').then( a => console.log('waiting for text area.'));
-        await this.page.waitForSelector('div[aria-label="Add link"]').then( a => console.log('waiting for text area.'));
+        await this.page.waitForSelector('#XPxXbf').then( a => console.log('OK: waiting for text area.'));
+        await this.page.waitForSelector('div[aria-label="Add link"]').then( a => console.log('OK: waiting for text area.'));
         await this.waitInCase(1);
-        await this.page.click('div[aria-label="Add link"]').then( a => console.log('Input link...'));
+        await this.page.click('div[aria-label="Add link"]').then( a => console.log('OK: Input link...'));
         // input link
         await this.waitInCase(2);
-        await this.page.type('.whsOnd.zHQkBf', link).then( a => console.log('typing link...'));
-        await this.page.keyboard.press('Enter').then( a => console.log('submit link...'));
+        await this.page.type('.whsOnd.zHQkBf', link).then( a => console.log('OK: typing link...'));
+        await this.page.keyboard.press('Enter').then( a => console.log('OK: submit link...'));
         // type title
         await this.waitInCase(1);
-        await this.page.type('#XPxXbf', this.post['subject']).then( a => console.log('Writing post..'));
+        await this.page.type('#XPxXbf', this.post['subject']).then( a => console.log('OK: Writing post..'));
 
         // Tap post button when available
         let re = await this.waitDisappear('div[aria-disabled="true"]')   //.then( a => console.log('Is post button enabled? ', a) );
         if ( re === false ) throw { message: 'Timeout for data to load for before posting exceeds!' }; // if ( !re ) -> not working as expected.
-        await this.page.tap('.O0WRkf.zZhnYe.e3Duub.C0oVfc').then( a => console.log('submit post..'));
+        await this.page.tap('.O0WRkf.zZhnYe.e3Duub.C0oVfc').then( a => console.log('OK: submit post..'));
         await this.waitInCase(1);
 
-        let count = await this.waitAppear( ['div:contains("Choose a category")', `div[data-name="${ this.category }"]`] );
+        let count = await this.waitAppear ( ['div:contains("Choose a category")', `div[data-name="${ this.category }"]`] );
         if ( count === -1 ) return null;
         await this.page.tap(`div[data-name="${ this.category }"]`);
     }
