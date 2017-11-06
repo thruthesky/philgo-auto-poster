@@ -9,7 +9,8 @@ export class PuppeteerAutoPostExtension {
     browser: Browser;
     page;
     post = null;
-
+    path = path;
+    fs = fs;
     ua = {
         firefox: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:54.0) Gecko/20100101 Firefox/54.0",
         chrome: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36",
@@ -27,8 +28,6 @@ export class PuppeteerAutoPostExtension {
         this.browser = await puppeteer.launch({ headless: headless }).catch(e => console.log('ERROR: failed to launch chromium browser. ' + e.message) );
         this.page = await this.browser.newPage().catch(e => console.log('ERROR: failed to create chromium browser. ' + e.message) );
     }
-
-
 
     async firefox() {
         await this.page.setUserAgent(this.ua.firefox);
