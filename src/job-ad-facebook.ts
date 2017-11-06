@@ -1,13 +1,19 @@
+
 import { PuppeteerAutoPostExtension } from './puppeteer-extension';
 
-class Facebook extends PuppeteerAutoPostExtension {
+class JobAdFacebook extends PuppeteerAutoPostExtension {
 
-    id = 'thruthesky@hanmail.net'; // 블로그 글 쓰기 아이디.
-    password = 'Asdf99**,*,*';     // 블로그 글 쓰기 비밀번호.
-    groups = ['261102127412333'];   // Array of group id.
+    // id = 'thruthesky@hanmail.net';                    // 블로그 글 쓰기 아이디.
+    // password = 'Asdf99**,*,*';              // 블로그 글 쓰기 비밀번호.
+    // group = ['261102127412333'];
+
+    id = 'renz.mallari.547';
+    password = "Wc~6924432,'";
+    groups = ['1665333727088421', '890662181065226'];
+
     url = 'https://m.facebook.com';        // 블로그 주소.
     constructor() {
-        super()
+        super();
     }
 
     async main() {
@@ -19,57 +25,48 @@ class Facebook extends PuppeteerAutoPostExtension {
         this.acceptLeaveAlert();
 
         while (login) {
-            await this.philgo_get_post('facebook3')
-                .then(async () => await this.post_each_group())
-                .catch(async e => {
-                    await this.error('fail', 'failed: ' + e.message);
-                    await this.philgo_auto_post_log(this.post, 'ERROR', 'facebook', '');
-                })
-            await this.sleep(60); //300 for 5 mins
+            let post = this.get_job_ad_post();
+            try {
+                for ( let re of this.groups ){
+                    await this.open_form( re );
+                    await this.waitInCase(3);
+                    await this.submit_form( post );
+                    await this.waitInCase(5);
+                }
+            }
+            catch(e) {
+                await this.error('fail', 'failed: ' + e.message);
+            }
+            post = null;
+            await this.sleep(259200); // 3 days before posting again -> to avoid spam
         }
     }
 
-    async post_each_group() {
-        for ( let re of this.groups ){
-            await this.open_form( re );
-            await this.waitInCase(3);
-            await this.submit_form();
-            await this.waitInCase(3);
-            await this.philgo_auto_post_log(this.post, 'SUCCESS', 'facebook', this.get_group_url( re ));
-            await this.waitInCase(5);
-        }
-    }
-
-    async submit_form() {
-
-        if (!this.post) {
-            console.log("OK: facebook: submit_form(). this.post is null. no more post? just return");
-            return;
-        }
+    async submit_form( post ) {
 
         console.log("OK: facebook: submit_form() begins.");
-
-        const post = this.post;
+        console.log(post.referrence)
 
         if (!this.page) {
             this.error('page_is_falsy', 'ERROR: this.page has become falsy! Had the browser started with headless: false and the browser closed?');
             return;
         }
-
-        // 간단하게 제목과 URL 만 입력해도 자동으로 Site Preview 가 적절하게 보인다.
-        let content = post['subject'] + ' ' + 'https://www.philgo.com/?' + post['idx'];
-        await this.page.type('textarea[name="xc_message"]', content).then(a => console.log("OK: typing contents"));
+        await this.page.type('textarea[name="xc_message"]', post.description).then(a => console.log("OK: typing contents"));
         await this.page.waitFor(5000).then(a => console.log("OK: Wait for 5 seconds just in case"));
+        
+        await this.upload_photo( post.file ).then( a => console.log('OK: Image uploaded.') );
+        await this.waitInCase(5);
+
         await this.page.click('input[name="view_post"]').then(a => console.log("OK: click post button"));
         await this.page.waitFor(1000).then(a => console.log("OK: wait for 1 sec just in case"));
         await this.page.waitForNavigation().then(a => console.log("OK: wait for navigation after clicking post button"));
 
         const html = await this.html();
-        if (html.indexOf(post['idx'])) {
-            console.log(`OK: post success. found post.idx [${post['idx']}] in the facebook.`);
+        if (html.indexOf(post.referrence)) {
+            console.log(`OK: post success. content found in the facebook.`);
         }
         else {
-            console.log("ERROR: failed to post or still pending.");
+            console.log("ERROR: failed to post or post still pending");
         }
 
     }
@@ -81,6 +78,16 @@ class Facebook extends PuppeteerAutoPostExtension {
     async open_form( groupId ) {
         await this.page.goto(this.get_group_url( groupId )).then(a => console.log("OK: open post form page"));
         await this.page.waitFor(3000).then(a => console.log("OK: wait for 3 sec just in case"));
+    }
+
+    async upload_photo( file: string ) {
+        await this.page.click('input[name="view_photo"]').then( a => console.log('OK: Uploading image..') );
+        await this.page.waitForNavigation().then( a => console.log('OK: Wait for upload image page.') );
+        // let input = await this.get_element('input[name="file1"]');
+        let input = await this.page.$('input[name="file1"]')
+        await input.uploadFile( file ).then( a => console.log('OK: Input image.') );
+        await this.waitInCase(3);
+        await this.page.click('input[name="add_photo_done"]');
     }
 
     async login() {
@@ -98,16 +105,13 @@ class Facebook extends PuppeteerAutoPostExtension {
         }
 
         let count = await this.waitAppear([`a[href="/recover/initiate"]`], 5);
-        if ( count > -1 ) throw { message: 'LOGIN FAILED: Facebook suggests to recover your password.' };
+        if ( count > -1 ) throw { message: 'FAILED LOGIN: Facebook suggests to recover your password.' };
         return true;
     }
 }
 
 
 
-let facebook = new Facebook();
+let jobAd = new JobAdFacebook();
 
-facebook.main();
-// tistory.get_post();
-
-
+jobAd.main();

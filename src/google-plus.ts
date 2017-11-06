@@ -6,8 +6,8 @@ class GooglePlus extends PuppeteerAutoPostExtension {
     url = 'https://plus.google.com';
     id = 'renzmallari401';
     password = "Wc~6924432,'";
-    communityId = '110408989422420420231';
-    category = 'Tablet';   // should be exact and case sensitive.
+    communityId //= '110408989422420420231';
+    category //= 'Tablet';   // should be exact and case sensitive.
     
         constructor() {
             super()
@@ -18,7 +18,7 @@ class GooglePlus extends PuppeteerAutoPostExtension {
             if ( !this.category ) throw { message: 'Requires category!' }
         }
 
-        await this.init();
+        await this.init( false );
         await this.firefox();
 
         console.log("Google Plus Begin: ");
@@ -29,10 +29,9 @@ class GooglePlus extends PuppeteerAutoPostExtension {
             await this.philgo_get_post(this.siteName)
                 .then( async post => await this.goto_community() )
                 .then( async category => await this.submit_post() )
-                .then( async () => await this.philgo_auto_post_log(this.post['subject'], 'SUCCESS', this.siteName, this.url + '/' + this.id))
+                .then( async () => await this.philgo_auto_post_log(this.post, 'SUCCESS', this.siteName, this.url + '/' + this.id))
                 .catch(async e => {
-                    if ( !e.code ) await this.error('fail', 'failed: ' + e.message);
-                    if ( e.code == 'no-data' ) await this.error(e.code, 'OK: ' + e.message);
+                    await this.error('fail', 'failed: ' + e.message);
                     await this.philgo_auto_post_log(this.post, 'ERROR', this.siteName, this.url + '/' + this.id);
                 });
 
@@ -42,6 +41,7 @@ class GooglePlus extends PuppeteerAutoPostExtension {
 
     async goto_community() {
         // Need to handle buy and sell
+        if ( !this.post ) return;
         if ( this.communityId ) {
             await this.page.waitForSelector('div[aria-label="Create a new post"]').then( a => console.log('Create post button found..') );
             await this.page.goto(this.url + '/communities/' + this.communityId, { timeout: 50000 }).then( a => console.log('OK: Go to community', this.communityId) );
@@ -51,7 +51,7 @@ class GooglePlus extends PuppeteerAutoPostExtension {
     }
 
     async submit_post( ) {
-        if ( !this.post ) throw { message: 'No data to post!', code: 'no-data' };
+        if ( !this.post ) return;
         let link = 'https://www.philgo.com/?' + this.post['idx'];
         // open post editor
         await this.page.waitForSelector('div[aria-label="Create a new post"]').then( a => console.log('OK: Create post button found..') );
@@ -76,10 +76,8 @@ class GooglePlus extends PuppeteerAutoPostExtension {
         if ( re === false ) throw { message: 'Timeout for data to load for before posting exceeds!' }; // if ( !re ) -> not working as expected.
         await this.page.tap('.O0WRkf.zZhnYe.e3Duub.C0oVfc').then( a => console.log('OK: submit post..'));
         await this.waitInCase(1);
-
-        let count = await this.waitAppear ( ['div:contains("Choose a category")', `div[data-name="${ this.category }"]`] );
-        if ( count === -1 ) return null;
-        await this.page.tap(`div[data-name="${ this.category }"]`);
+        let count = await this.waitAppear ( ['div:contains("Choose a category")', `div[data-name="${ this.category }"]`], 5 ).then( a => { console.log('OK: count: ', a ); return a; });
+        if ( count > -1 )  await this.page.tap(`div[data-name="${ this.category }"]`);
     }
 
 

@@ -9,7 +9,6 @@ export class PuppeteerAutoPostExtension {
     browser: Browser;
     page;
     post = null;
-
     ua = {
         firefox: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:54.0) Gecko/20100101 Firefox/54.0",
         chrome: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36",
@@ -27,8 +26,6 @@ export class PuppeteerAutoPostExtension {
         this.browser = await puppeteer.launch({ headless: headless }).catch(e => console.log('ERROR: failed to launch chromium browser. ' + e.message) );
         this.page = await this.browser.newPage().catch(e => console.log('ERROR: failed to create chromium browser. ' + e.message) );
     }
-
-
 
     async firefox() {
         await this.page.setUserAgent(this.ua.firefox);
@@ -66,7 +63,7 @@ export class PuppeteerAutoPostExtension {
         const filename = `${code}.png`
         const filepath = path.join(dir, filename);
 
-        if ( code != 'no-data' ) console.log(`ERROR: CODE: ${code} MESSAGE: ${msg}. See ${filepath}`);
+        console.log(`ERROR: CODE: ${code} MESSAGE: ${msg}. See ${filepath}`);
 
 
         if ( ! this.page ) {
@@ -75,8 +72,8 @@ export class PuppeteerAutoPostExtension {
         }
 
         if (!fs.existsSync(dir)) fs.mkdirSync(dir);
-        if (code != 'no-data') await this.page.screenshot({ path: filepath });
-        if (code == 'no-data') console.log(msg); // no need to screenshot if no data.
+        await this.page.screenshot({ path: filepath });
+        
     }
 
     async fatal(code, msg) {
@@ -325,5 +322,20 @@ export class PuppeteerAutoPostExtension {
             }
             else await dialog.accept();
         });
+    }
+
+    /**
+     * Returns the contents and image file to upload.
+     * @param textFile - path to text file to read
+     * @param imgFile - path to image to upload
+     */
+    get_job_ad_post( textFile = path.join( __dirname, '..', 'file', 'description.txt'), imgFile = path.join(__dirname, '..', 'file', 'hiring.jpg') ) {
+        
+        let content = fs.readFileSync( textFile ).toString();
+        let arr = content.split('\n');
+        return { file : (imgFile) ?  imgFile : null,
+                 description: arr.join('\n'),
+                 referrence: arr[0] }
+                 
     }
 }
