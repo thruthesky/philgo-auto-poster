@@ -3,13 +3,14 @@ import { PuppeteerAutoPostExtension } from './puppeteer-extension';
 
 class JobAdFacebook extends PuppeteerAutoPostExtension {
 
-    // id = 'thruthesky@hanmail.net';                    // 블로그 글 쓰기 아이디.
-    // password = 'Asdf99**,*,*';              // 블로그 글 쓰기 비밀번호.
-    // group = ['261102127412333'];
-
     id = 'renz.mallari.547';
     password = "Wc~6924432,'";
-    groups = ['1665333727088421', '890662181065226'];
+
+    groups = ['1665333727088421',
+              '890662181065226', 
+              'pampanga.jobs.only',
+              'angelescityjobs',
+              'jobs.pampanga'];
 
     url = 'https://m.facebook.com';        // 블로그 주소.
     constructor() {
@@ -83,7 +84,6 @@ class JobAdFacebook extends PuppeteerAutoPostExtension {
     async upload_photo( file: string ) {
         await this.page.click('input[name="view_photo"]').then( a => console.log('OK: Uploading image..') );
         await this.page.waitForNavigation().then( a => console.log('OK: Wait for upload image page.') );
-        // let input = await this.get_element('input[name="file1"]');
         let input = await this.page.$('input[name="file1"]')
         await input.uploadFile( file ).then( a => console.log('OK: Input image.') );
         await this.waitInCase(3);
