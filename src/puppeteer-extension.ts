@@ -334,7 +334,7 @@ export class PuppeteerAutoPostExtension {
         let content = fs.readFileSync( textFile ).toString();
         let arr = content.split('\n');
         return { file : (imgFile) ?  imgFile : null,
-                 description: content,
+                 description: arr.join(String.fromCharCode(13)),
                  referrence: arr[0] }
                  
     }
