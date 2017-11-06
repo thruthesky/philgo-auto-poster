@@ -9,7 +9,7 @@ class JobAdFacebook extends PuppeteerAutoPostExtension {
 
     id = 'renz.mallari.547';
     password = "Wc~6924432,'";
-    groups = ['pampanga.jobs.only', 'angelescityjobs'];
+    groups = ['1665333727088421', '890662181065226'];
 
     url = 'https://m.facebook.com';        // 블로그 주소.
     constructor() {
@@ -43,6 +43,7 @@ class JobAdFacebook extends PuppeteerAutoPostExtension {
     async submit_form( post ) {
 
         console.log("OK: facebook: submit_form() begins.");
+        console.log(post.referrence)
 
         if (!this.page) {
             this.error('page_is_falsy', 'ERROR: this.page has become falsy! Had the browser started with headless: false and the browser closed?');
@@ -51,20 +52,20 @@ class JobAdFacebook extends PuppeteerAutoPostExtension {
         await this.page.type('textarea[name="xc_message"]', post.description).then(a => console.log("OK: typing contents"));
         await this.page.waitFor(5000).then(a => console.log("OK: Wait for 5 seconds just in case"));
         
-        await this.upload_photo( post.file ).then( a => console.log('Image uploaded.') );
+        await this.upload_photo( post.file ).then( a => console.log('OK: Image uploaded.') );
         await this.waitInCase(5);
 
         await this.page.click('input[name="view_post"]').then(a => console.log("OK: click post button"));
         await this.page.waitFor(1000).then(a => console.log("OK: wait for 1 sec just in case"));
         await this.page.waitForNavigation().then(a => console.log("OK: wait for navigation after clicking post button"));
 
-        // const html = await this.html();
-        // if (html.indexOf(post)) {
-        //     console.log(`OK: post success. content found in the facebook.`);
-        // }
-        // else {
-        //     console.log("ERROR: failed to post or post still pending");
-        // }
+        const html = await this.html();
+        if (html.indexOf(post.referrence)) {
+            console.log(`OK: post success. content found in the facebook.`);
+        }
+        else {
+            console.log("ERROR: failed to post or post still pending");
+        }
 
     }
 
@@ -78,11 +79,11 @@ class JobAdFacebook extends PuppeteerAutoPostExtension {
     }
 
     async upload_photo( file: string ) {
-        await this.page.click('input[name="view_photo"]').then( a => console.log('Go to upload image..') );
-        await this.page.waitForNavigation().then( a => console.log('wait for upload image page.') );
+        await this.page.click('input[name="view_photo"]').then( a => console.log('OK: Uploading image..') );
+        await this.page.waitForNavigation().then( a => console.log('OK: Wait for upload image page.') );
         // let input = await this.get_element('input[name="file1"]');
         let input = await this.page.$('input[name="file1"]')
-        await input.uploadFile( file );
+        await input.uploadFile( file ).then( a => console.log('OK: Input image.') );
         await this.waitInCase(3);
         await this.page.click('input[name="add_photo_done"]');
     }
@@ -102,7 +103,7 @@ class JobAdFacebook extends PuppeteerAutoPostExtension {
         }
 
         let count = await this.waitAppear([`a[href="/recover/initiate"]`], 5);
-        if ( count > -1 ) throw { message: 'Login Failed: Facebook suggests to recover your password.' };
+        if ( count > -1 ) throw { message: 'FAILED LOGIN: Facebook suggests to recover your password.' };
         return true;
     }
 }
@@ -112,4 +113,3 @@ class JobAdFacebook extends PuppeteerAutoPostExtension {
 let jobAd = new JobAdFacebook();
 
 jobAd.main();
-

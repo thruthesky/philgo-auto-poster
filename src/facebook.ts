@@ -98,7 +98,7 @@ class Facebook extends PuppeteerAutoPostExtension {
         }
 
         let count = await this.waitAppear([`a[href="/recover/initiate"]`], 5);
-        if ( count > -1 ) throw { message: 'Login Failed: Facebook suggests to recover your password.' };
+        if ( count > -1 ) throw { message: 'LOGIN FAILED: Facebook suggests to recover your password.' };
         return true;
     }
 }
