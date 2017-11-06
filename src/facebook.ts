@@ -69,7 +69,7 @@ class Facebook extends PuppeteerAutoPostExtension {
             console.log(`OK: post success. found post.idx [${post['idx']}] in the facebook.`);
         }
         else {
-            console.log("ERROR: failed to post");
+            console.log("ERROR: failed to post or still pending.");
         }
 
     }

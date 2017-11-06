@@ -40,7 +40,7 @@ class Facebook extends PuppeteerAutoPostExtension {
         }
     }
 
-    async submit_form( content ) {
+    async submit_form( post ) {
 
         console.log("OK: facebook: submit_form() begins.");
 
@@ -48,23 +48,23 @@ class Facebook extends PuppeteerAutoPostExtension {
             this.error('page_is_falsy', 'ERROR: this.page has become falsy! Had the browser started with headless: false and the browser closed?');
             return;
         }
-        await this.page.type('textarea[name="xc_message"]', content.description).then(a => console.log("OK: typing contents"));
+        await this.page.type('textarea[name="xc_message"]', post.description).then(a => console.log("OK: typing contents"));
         await this.page.waitFor(5000).then(a => console.log("OK: Wait for 5 seconds just in case"));
         
-        await this.upload_photo( content.file ).then( a => console.log('Image uploaded.') );
+        await this.upload_photo( post.file ).then( a => console.log('Image uploaded.') );
         await this.waitInCase(5);
 
         await this.page.click('input[name="view_post"]').then(a => console.log("OK: click post button"));
         await this.page.waitFor(1000).then(a => console.log("OK: wait for 1 sec just in case"));
         await this.page.waitForNavigation().then(a => console.log("OK: wait for navigation after clicking post button"));
 
-        const html = await this.html();
-        if (html.indexOf(content)) {
-            console.log(`OK: post success. content found in the facebook.`);
-        }
-        else {
-            console.log("ERROR: failed to post");
-        }
+        // const html = await this.html();
+        // if (html.indexOf(post)) {
+        //     console.log(`OK: post success. content found in the facebook.`);
+        // }
+        // else {
+        //     console.log("ERROR: failed to post or post still pending");
+        // }
 
     }
 
