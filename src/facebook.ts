@@ -2,13 +2,12 @@ import { PuppeteerAutoPostExtension } from './puppeteer-extension';
 
 class Facebook extends PuppeteerAutoPostExtension {
 
-    id = 'thruthesky@hanmail.net';                    // 블로그 글 쓰기 아이디.
-    password = 'Asdf99**,*,*';              // 블로그 글 쓰기 비밀번호.
+    id = 'thruthesky@hanmail.net'; // 블로그 글 쓰기 아이디.
+    password = 'Asdf99**,*,*';     // 블로그 글 쓰기 비밀번호.
+    groups = ['261102127412333'];   // Array of group id.
     url = 'https://m.facebook.com';        // 블로그 주소.
-    group = '261102127412333';
-
     constructor() {
-        super();
+        super()
     }
 
     async main() {
@@ -21,21 +20,24 @@ class Facebook extends PuppeteerAutoPostExtension {
 
         while (login) {
             await this.philgo_get_post('facebook3')
-                .then(async post => await this.open_form())
-                .then(async () => await this.submit_form())
-                .then(async () => await this.philgo_auto_post_log(this.post, 'SUCCESS', 'facebook', this.get_group_url()))
+                .then(async () => await this.post_each_group())
                 .catch(async e => {
                     await this.error('fail', 'failed: ' + e.message);
                     await this.philgo_auto_post_log(this.post, 'ERROR', 'facebook', '');
                 })
-
-            await this.sleep(60);
+            await this.sleep(60); //300 for 5 mins
         }
     }
 
-
-    async screenshot(filename) {
-        await this.page.screenshot({ path: `screenshots/facebook-${this.group}-${filename}.png` });
+    async post_each_group() {
+        for ( let re of this.groups ){
+            await this.open_form( re );
+            await this.waitInCase(3);
+            await this.submit_form();
+            await this.waitInCase(3);
+            await this.philgo_auto_post_log(this.post, 'SUCCESS', 'facebook', this.get_group_url( re ));
+            await this.waitInCase(5);
+        }
     }
 
     async submit_form() {
@@ -72,16 +74,14 @@ class Facebook extends PuppeteerAutoPostExtension {
 
     }
 
-
-    get_group_url() {
-        return this.url + '/groups/' + this.group;
+    get_group_url( group ) {
+        return this.url + '/groups/' + group;
     }
-    async open_form() {
-        await this.page.goto(this.get_group_url()).then(a => console.log("OK: open post form page"));
+
+    async open_form( groupId ) {
+        await this.page.goto(this.get_group_url( groupId )).then(a => console.log("OK: open post form page"));
         await this.page.waitFor(3000).then(a => console.log("OK: wait for 3 sec just in case"));
     }
-
-
 
     async login() {
         await this.page.goto(this.url)
@@ -96,11 +96,11 @@ class Facebook extends PuppeteerAutoPostExtension {
         if ($html.find(freeModeButton).length) {
             await this.page.click(freeModeButton).then(a => console.log("OK: click free mode OK button"));
         }
+
+        let count = await this.waitAppear([`a[href="/recover/initiate"]`], 5);
+        if ( count > -1 ) throw { message: 'Login Failed: Facebook suggests to recover your password.' };
         return true;
     }
-
-
-
 }
 
 
