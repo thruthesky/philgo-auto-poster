@@ -25,17 +25,19 @@ class JobAdFacebook extends PuppeteerAutoPostExtension {
         this.acceptLeaveAlert();
 
         while (login) {
-            try{
+            let post = this.get_job_ad_post();
+            try {
                 for ( let re of this.groups ){
                     await this.open_form( re );
                     await this.waitInCase(3);
-                    await this.submit_form( this.get_job_ad_post() );
+                    await this.submit_form( post );
                     await this.waitInCase(5);
                 }
             }
-            catch(e){
+            catch(e) {
                 await this.error('fail', 'failed: ' + e.message);
             }
+            post = null;
             await this.sleep(259200); // 3 days before posting again -> to avoid spam
         }
     }
