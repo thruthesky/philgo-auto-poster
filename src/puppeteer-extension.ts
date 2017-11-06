@@ -9,8 +9,6 @@ export class PuppeteerAutoPostExtension {
     browser: Browser;
     page;
     post = null;
-    path = path;
-    fs = fs;
     ua = {
         firefox: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:54.0) Gecko/20100101 Firefox/54.0",
         chrome: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36",
@@ -324,5 +322,19 @@ export class PuppeteerAutoPostExtension {
             }
             else await dialog.accept();
         });
+    }
+
+    /**
+     * Returns the contents and image file to upload.
+     * @param textFile - path to text file to read
+     * @param imgFile - path to image to upload
+     */
+    get_job_ad_post( textFile = path.join( __dirname, '..', 'file', 'description.txt'), imgFile = path.join(__dirname, '..', 'file', 'hiring.jpg') ) {
+        
+        let content = fs.readFileSync( textFile ).toString();
+        let arr = content.split('\\n\\r');
+        return { file : (imgFile) ?  imgFile : null,
+                 description: arr.join('\\n') }
+                 
     }
 }

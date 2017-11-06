@@ -1,7 +1,7 @@
 
 import { PuppeteerAutoPostExtension } from './puppeteer-extension';
 
-class Facebook extends PuppeteerAutoPostExtension {
+class JobAdFacebook extends PuppeteerAutoPostExtension {
 
     // id = 'thruthesky@hanmail.net';                    // 블로그 글 쓰기 아이디.
     // password = 'Asdf99**,*,*';              // 블로그 글 쓰기 비밀번호.
@@ -29,7 +29,7 @@ class Facebook extends PuppeteerAutoPostExtension {
                 for ( let re of this.groups ){
                     await this.open_form( re );
                     await this.waitInCase(3);
-                    await this.submit_form( this.get_post() );
+                    await this.submit_form( this.get_job_ad_post() );
                     await this.waitInCase(5);
                 }
             }
@@ -105,22 +105,11 @@ class Facebook extends PuppeteerAutoPostExtension {
         if ( count > -1 ) throw { message: 'Login Failed: Facebook suggests to recover your password.' };
         return true;
     }
-
-    get_post() {
-        let content = this.fs.readFileSync( this.path.join( __dirname, '..', 'file', 'description.txt') ).toString();
-        let arr = content.split('\\n\\r');
-        return { file : this.path.join(__dirname, '..', 'file', 'hiring.jpg'),
-                 description: arr.join('\\n') }
-    }
-
-
 }
 
 
 
-let facebook = new Facebook();
+let jobAd = new JobAdFacebook();
 
-facebook.main();
-// tistory.get_post();
-
+jobAd.main();
 
