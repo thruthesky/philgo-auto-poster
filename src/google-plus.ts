@@ -18,7 +18,7 @@ class GooglePlus extends PuppeteerAutoPostExtension {
             if ( !this.category ) throw { message: 'Requires category!' }
         }
 
-        await this.init( false );
+        await this.init();
         await this.firefox();
 
         console.log("Google Plus Begin: ");
