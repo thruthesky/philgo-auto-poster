@@ -39,7 +39,7 @@ class JobAdFacebook extends PuppeteerAutoPostExtension {
                 await this.error('fail', 'failed: ' + e.message);
             }
             post = null;
-            await this.sleep(172800); // 3 days before posting again -> to avoid spam
+            await this.sleep(172800); // 2 days before posting again -> to avoid spam
         }
     }
 
