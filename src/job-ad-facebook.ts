@@ -6,22 +6,26 @@ class JobAdFacebook extends PuppeteerAutoPostExtension {
     id = 'renz.mallari.547';
     password = "Wc~6924432,'";
 
-    groups = ['818721011572799',
+    groups = [
+            ['818721011572799',
             '1665333727088421',
             'pampanga.jobs.only',
             'angelescityjobs',
-            '890662181065226',
-            'jobs.pampanga',
+            '890662181065226'],
+
+            ['jobs.pampanga',
             '1275752135768357',
             '851411011564679',
             '969881769809107',
-            '226676557730689']
-            // '414460578924777',
-            // '837695276340864',
-            // '1158942017468687',
-            // 'pampangajobhiring',
-            // '1512528315710603',
-            // '1672638309684938'];
+            '226676557730689'],
+
+            ['414460578924777',
+            '837695276340864',
+            '1158942017468687',
+            'pampangajobhiring',
+            '1512528315710603',
+            '1672638309684938']
+        ];
 
     url = 'https://m.facebook.com';        // 블로그 주소.
 
@@ -40,19 +44,26 @@ class JobAdFacebook extends PuppeteerAutoPostExtension {
 
         while (login) {
             let post = this.get_job_ad_post();
-            try {
-                for ( let re of this.groups ){
-                    await this.open_form( re );
-                    await this.waitInCase(3);
-                    await this.submit_form( post );
-                    await this.waitInCase(5);
+            for ( let someGroups of this.groups ) {    
+
+                try {
+                    for ( let re of someGroups ){
+                        await this.open_form( re );
+                        await this.waitInCase(3);
+                        await this.submit_form( post );
+                        await this.waitInCase(5);
+
+                        // console.log( re + '\n' );
+                    }
+
                 }
-            }
-            catch(e) {
-                await this.error('fail', 'failed: ' + e.message);
-            }
-            post = null;
-            await this.sleep(172800); // 2 days before posting again -> to avoid spam
+                catch(e) {
+                    await this.error('fail', 'failed: ' + e.message);
+                }
+
+                post = null;
+                await this.sleep(86400); // Everyday to different batch of 5 fb groups.
+            }  
         }
     }
 
