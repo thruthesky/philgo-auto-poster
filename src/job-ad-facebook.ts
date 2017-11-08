@@ -6,11 +6,22 @@ class JobAdFacebook extends PuppeteerAutoPostExtension {
     id = 'renz.mallari.547';
     password = "Wc~6924432,'";
 
-    groups = ['1665333727088421',
-              '890662181065226', 
-              'pampanga.jobs.only',
-              'angelescityjobs',
-              'jobs.pampanga'];
+    groups = ['818721011572799',
+            '1665333727088421',
+            'pampanga.jobs.only',
+            'angelescityjobs',
+            '890662181065226',
+            'jobs.pampanga',
+            '1275752135768357',
+            '851411011564679',
+            '969881769809107',
+            '226676557730689']
+            // '414460578924777',
+            // '837695276340864',
+            // '1158942017468687',
+            // 'pampangajobhiring',
+            // '1512528315710603',
+            // '1672638309684938'];
 
     url = 'https://m.facebook.com';        // 블로그 주소.
 
