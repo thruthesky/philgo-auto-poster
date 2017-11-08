@@ -13,6 +13,8 @@ class JobAdFacebook extends PuppeteerAutoPostExtension {
               'jobs.pampanga'];
 
     url = 'https://m.facebook.com';        // 블로그 주소.
+
+    waitOption = { timeout: 60000 }; // 1 min
     constructor() {
         super();
     }
@@ -53,14 +55,14 @@ class JobAdFacebook extends PuppeteerAutoPostExtension {
             return;
         }
         await this.page.type('textarea[name="xc_message"]', post.description).then(a => console.log("OK: typing contents"));
-        await this.page.waitFor(5000).then(a => console.log("OK: Wait for 5 seconds just in case"));
+        await this.waitInCase(5);
         
         await this.upload_photo( post.file ).then( a => console.log('OK: Image uploaded.') );
         await this.waitInCase(5);
 
-        await this.page.waitFor('input[name="view_post"]').then( a => console.log("OK: waiting for post button") );
+        await this.page.waitFor('input[name="view_post"]', this.waitOption ).then( a => console.log("OK: waiting for post button") );
         await this.page.click('input[name="view_post"]').then(a => console.log("OK: click post button"));
-        await this.page.waitFor(1000).then(a => console.log("OK: wait for 1 sec just in case"));
+        await this.waitInCase(1);
         await this.page.waitForNavigation().then(a => console.log("OK: wait for navigation after clicking post button"));
 
         const html = await this.html();
@@ -83,7 +85,7 @@ class JobAdFacebook extends PuppeteerAutoPostExtension {
     }
 
     async upload_photo( file: string ) {
-        await this.page.waitFor('input[name="view_photo"]')
+        await this.page.waitFor('input[name="view_photo"]', this.waitOption)
         await this.page.click('input[name="view_photo"]').then( a => console.log('OK: Uploading image..') );
         await this.page.waitForNavigation().then( a => console.log('OK: Wait for upload image page.') );
         let input = await this.page.$('input[name="file1"]')
