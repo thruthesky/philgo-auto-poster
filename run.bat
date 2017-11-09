@@ -6,3 +6,4 @@
 @start cmd /k "title TEACHER JOB AD FACEBOOK && node dist\job-ad-facebook.js"
 @start cmd /k "title DAUM && node dist\daum.js"
 @start cmd /k "title GOOGLE PLUS && node dist\google-plus.js"
+@start cmd /k "title GOOGLE PLUS && node dist\facebook.js"
