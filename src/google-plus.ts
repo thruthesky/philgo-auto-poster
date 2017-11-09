@@ -35,7 +35,7 @@ class GooglePlus extends PuppeteerAutoPostExtension {
                     await this.philgo_auto_post_log(this.post, 'ERROR', this.siteName, this.url + '/' + this.id);
                 });
 
-            await this.sleep(60);
+            await this.sleep(300); // 5 mins
         }
     }
 

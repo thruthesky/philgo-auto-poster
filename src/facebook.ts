@@ -25,7 +25,7 @@ class Facebook extends PuppeteerAutoPostExtension {
                     await this.error('fail', 'failed: ' + e.message);
                     await this.philgo_auto_post_log(this.post, 'ERROR', 'facebook', '');
                 })
-            await this.sleep(60); //300 for 5 mins
+            await this.sleep(600); //600 for 10 mins
         }
     }
 
