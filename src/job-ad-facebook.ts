@@ -7,17 +7,17 @@ class JobAdFacebook extends PuppeteerAutoPostExtension {
     password = "Wc~6924432,'";
 
     groups = [
-            ['818721011572799',
-            '1665333727088421',
-            'pampanga.jobs.only',
-            'angelescityjobs',
-            '890662181065226'],
-
             ['jobs.pampanga',
             '1275752135768357',
             '851411011564679',
             '969881769809107',
             '226676557730689'],
+
+            ['818721011572799',
+            '1665333727088421',
+            'pampanga.jobs.only',
+            'angelescityjobs',
+            '890662181065226'],
 
             ['414460578924777',
             '837695276340864',
@@ -43,9 +43,9 @@ class JobAdFacebook extends PuppeteerAutoPostExtension {
         this.acceptLeaveAlert();
 
         while (login) {
-            let post = this.get_job_ad_post();
-            for ( let someGroups of this.groups ) {    
 
+            for ( let someGroups of this.groups ) {    
+                let post = this.get_job_ad_post();
                 try {
                     for ( let re of someGroups ){
                         await this.open_form( re );
@@ -63,7 +63,8 @@ class JobAdFacebook extends PuppeteerAutoPostExtension {
 
                 post = null;
                 await this.sleep(86400); // Everyday to different batch of 5 fb groups.
-            }  
+            }
+              
         }
     }
 
