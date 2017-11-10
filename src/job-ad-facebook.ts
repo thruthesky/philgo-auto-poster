@@ -6,19 +6,20 @@ class JobAdFacebook extends PuppeteerAutoPostExtension {
     id = 'renz.mallari.547';
     password = "Wc~6924432,'";
 
-    groups = [
+    superGroup = [
+            // subGroup
             ['jobs.pampanga',
             '1275752135768357',
             '851411011564679',
             '969881769809107',
             '226676557730689'],
-
+            // subGroup
             ['818721011572799',
             '1665333727088421',
             'pampanga.jobs.only',
             'angelescityjobs',
             '890662181065226'],
-
+            // subGroup
             ['414460578924777',
             '837695276340864',
             '1158942017468687',
@@ -44,10 +45,10 @@ class JobAdFacebook extends PuppeteerAutoPostExtension {
 
         while (login) {
 
-            for ( let someGroups of this.groups ) {    
+            for ( let subGroup of this.superGroup ) {    
                 let post = this.get_job_ad_post();
                 try {
-                    for ( let re of someGroups ){
+                    for ( let re of subGroup ){
                         await this.open_form( re );
                         await this.waitInCase(3);
                         await this.submit_form( post );
