@@ -78,10 +78,11 @@ class JobAdFacebook extends PuppeteerAutoPostExtension {
             this.error('page_is_falsy', 'ERROR: this.page has become falsy! Had the browser started with headless: false and the browser closed?');
             return;
         }
-        await this.page.type('textarea[name="xc_message"]', post.description).then(a => console.log("OK: typing contents"));
-        await this.waitInCase(5);
         
         await this.upload_photo( post.file ).then( a => console.log('OK: Image uploaded.') );
+        await this.waitInCase(5);
+
+        await this.page.type('textarea[name="xc_message"]', post.description).then(a => console.log("OK: typing contents"));
         await this.waitInCase(5);
 
         await this.page.waitFor('input[name="view_post"]', this.waitOption ).then( a => console.log("OK: waiting for post button") );
