@@ -6,27 +6,29 @@ class JobAdFacebook extends PuppeteerAutoPostExtension {
     id = 'renz.mallari.547';
     password = "Wc~6924432,'";
 
-    superGroup = [
-            // subGroup
-            ['jobs.pampanga',
-            '1275752135768357',
-            '851411011564679',
-            '969881769809107',
-            '226676557730689'],
-            // subGroup
-            ['818721011572799',
-            '1665333727088421',
-            'pampanga.jobs.only',
-            'angelescityjobs',
-            '890662181065226'],
-            // subGroup
-            ['414460578924777',
-            '837695276340864',
-            '1158942017468687',
-            'pampangajobhiring',
-            '1512528315710603',
-            '1672638309684938']
-        ];
+    // superGroup = [
+    //         // subGroup
+    //         ['jobs.pampanga',
+    //         '1275752135768357',
+    //         '851411011564679',
+    //         '969881769809107',
+    //         '226676557730689'],
+    //         // subGroup
+    //         ['818721011572799',
+    //         '1665333727088421',
+    //         'pampanga.jobs.only',
+    //         'angelescityjobs',
+    //         '890662181065226'],
+    //         // subGroup
+    //         ['414460578924777',
+    //         '837695276340864',
+    //         '1158942017468687',
+    //         'pampangajobhiring',
+    //         '1512528315710603',
+    //         '1672638309684938']
+    //     ];
+
+    superGroup = [['jobs.pampanga']]
 
     url = 'https://m.facebook.com';        // 블로그 주소.
 
@@ -36,7 +38,7 @@ class JobAdFacebook extends PuppeteerAutoPostExtension {
     }
 
     async main() {
-        await this.init();
+        await this.init( false );
         await this.firefox();
 
         console.log("Facebook Begin: ");
@@ -47,20 +49,13 @@ class JobAdFacebook extends PuppeteerAutoPostExtension {
 
             for ( let subGroup of this.superGroup ) {    
                 let post = this.get_job_ad_post();
-                try {
                     for ( let re of subGroup ){
-                        await this.open_form( re );
+                        await this.open_form( re ).catch( e => { this.error( e.code, e.message ) } );
                         await this.waitInCase(3);
-                        await this.submit_form( post );
+                        await this.submit_form( post ).catch( e => { this.error( e.code, e.message ) } );;
                         await this.waitInCase(5);
-
                         // console.log( re + '\n' );
                     }
-
-                }
-                catch(e) {
-                    await this.error('fail', 'failed: ' + e.message);
-                }
 
                 post = null;
                 await this.sleep(86400); // Everyday to different batch of 5 fb groups.
@@ -82,8 +77,7 @@ class JobAdFacebook extends PuppeteerAutoPostExtension {
         await this.upload_photo( post.file ).then( a => console.log('OK: Image uploaded.') );
         await this.waitInCase(5);
 
-        await this.page.type('textarea[name="xc_message"]', post.description).then(a => console.log("OK: typing contents"));
-        await this.waitInCase(5);
+        await this.page.type('textarea[name="xc_message"]', post.description, {delay : 20}).then(a => console.log("OK: typing contents"));
 
         await this.page.waitFor('input[name="view_post"]', this.waitOption ).then( a => console.log("OK: waiting for post button") );
         await this.page.click('input[name="view_post"]').then(a => console.log("OK: click post button"));

@@ -332,10 +332,10 @@ export class PuppeteerAutoPostExtension {
     get_job_ad_post( textFile = path.join( __dirname, '..', 'file', 'description.txt'), imgFile = path.join(__dirname, '..', 'file', 'hiring.jpg') ) {
         
         let content = fs.readFileSync( textFile ).toString();
-        let arr = content.split('\n');
+        let arr = content.split('\r\n');
         return { file : (imgFile) ?  imgFile : null,
-                 description: arr.join(String.fromCharCode(13)),
-                 referrence: arr[0] }
+                description: arr.join(String.fromCharCode(13)),
+                referrence: arr[0] }
                  
     }
 }
