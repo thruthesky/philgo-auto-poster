@@ -2,8 +2,8 @@ import { PuppeteerAutoPostExtension } from './puppeteer-extension';
 
 class Facebook extends PuppeteerAutoPostExtension {
 
-    id = 'thruthesky@hanmail.net'; // 블로그 글 쓰기 아이디.
-    password = 'Asdf99**,*,*';     // 블로그 글 쓰기 비밀번호.
+    id = 'renz.mallari.547'; // 블로그 글 쓰기 아이디.
+    password = "Wc~6924432,'";     // 블로그 글 쓰기 비밀번호.
     groups = ['261102127412333'];   // Array of group id.
     url = 'https://m.facebook.com';        // 블로그 주소.
     constructor() {
@@ -25,7 +25,7 @@ class Facebook extends PuppeteerAutoPostExtension {
                     await this.error('fail', 'failed: ' + e.message);
                     await this.philgo_auto_post_log(this.post, 'ERROR', 'facebook', '');
                 })
-            await this.sleep(60); //300 for 5 mins
+            await this.sleep(600); //600 for 10 mins
         }
     }
 
